@@ -41,9 +41,13 @@ io.on('connection', (socket) => {
     if(!games[id])
       return
 
-    var powerups_list = ["bomb"]
+    var powerups_list = ["rotate"]
 
     let isPlayer1 = games[id].player1 === socket.id
+
+    if((isPlayer1 && games[id].turn.player1) || (!isPlayer1 && games[id].turn.player2))
+      return
+
     for(let i = 6;i>=0;i--) {
       if(games[id].board[column][i] === 0) {
         games[id].board[column][i] = isPlayer1?1:2
@@ -78,24 +82,55 @@ io.on('connection', (socket) => {
 
     let isPlayer1 = games[id].player1 === socket.id
 
+    if((isPlayer1 && games[id].turn.player1) || (!isPlayer1 && games[id].turn.player2))
+      return
+
     let power = isPlayer1 ? games[id].power.player1 : games[id].power.player2
 
     if (power === "bomb") {
       for(let i = 6;i>=0;i--) {
         if(games[id].board[column][i] === 0) {
-          games[id].board[column][i+1] = 0
-          break;
+          for(let x = -1;x<=1;x++) {
+            for(let y = -1;y<=1;y++) {
+              if(column+x>6 || column+x<0 || i+y>6 || i+y<0) {
+                continue
+              }
+
+              games[id].board[column+x][i+y] = 0
+            }
+          }
+          break
         }
       }
     }
 
-    let who_won = won(id)
+    if (power === "rotate") {
+      let board_copy = JSON.parse(JSON.stringify(games[id].board))
 
-    emit_board(id)
-    if(who_won===null) {
-      switch_turns(id)
-    } else {
-      emit_win(id, who_won)
+      for(let x = 0;x<7;x++) {
+        for(let y = 0;y<7;y++) {
+          games[id].board[x][y] = board_copy[7 - y - 1][x]
+        }
+      }
+    }
+
+    if(power !== "none") {
+      apply_board_gravity(id)
+
+      if(isPlayer1) {
+        games[id].power.player1 = "none"
+      } else {
+        games[id].power.player2 = "none"
+      }
+
+      let who_won = won(id)
+
+      emit_board(id)
+      if(who_won===null) {
+        switch_turns(id)
+      } else {
+        emit_win(id, who_won)
+      }
     }
   })
 
@@ -153,6 +188,25 @@ io.on('connection', (socket) => {
     }
 
     return null
+  }
+
+  function apply_board_gravity (id) {
+    for(let x = 0;x<7;x++) {
+      for(let y = 6;y>=0;y--) {
+        for(let o = 0;o<6-y;o++) {
+          // if(games[id].board[x][y+o]!==0) {
+          //   games[id].board[x][y+o-1] = games[id].board[x][y]
+          //   games[id].board[x][y] = 0
+          //   break;
+          // }
+          if(y+o === 6) {
+            games[id].board[x][y] = 0
+            games[id].board[x][y+o] = games[id].board[x][y]
+            break;
+          }
+        }
+      }
+    }
   }
 })
 

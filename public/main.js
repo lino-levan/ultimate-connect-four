@@ -127,8 +127,7 @@ canvas.onclick = (e) => {
 }
 
 document.onkeydown = (e) => {
-  if(e.code === "Space") {
-    alert("YOOO BOMB MOMENT")
+  if(e.code === "Space" && myturn) {
     let column = Math.clamp(Math.floor((mouseX)/100), 0, 6)
     socket.emit("drop_power", code, column)
   }
