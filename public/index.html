@@ -2,25 +2,26 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Ultimate Connect 4</title>
+    <title>Ultimate 4-In-A-Row</title>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body style="display:flex;justify-content:center;font-family: Arial, sans-serif;">
-    <div id="you" style="width:200px;height:100px;display:flex;justify-content:center;">
-    </div>
-    <div>
-      <canvas id="canvas" width="700px" height="700px" style="border-radius:10px;"></canvas>
-      <div style="display:flex;justify-content:center;" id="game_menu">
-        <button id="create_game">Create Game</button>
-        <input id="code"></input>
-        <button id="join_game">Join Game</button>
+    <div id="whole" style="display:none;justify-content:center;">
+      <div id="you" style="width:200px;height:100px;display:flex;justify-content:center;">
       </div>
-      <div style="display:flex;justify-content:center;">
-        <h1 id="gamecode"></h1>
+      <div>
+        <div style="display:flex;justify-content:center; height:75px">
+          <h1 id="gamecode">Ultimate 4-In-A-Row</h1>
+        </div>
+        <canvas id="canvas" width="700px" height="700px" style="border-radius:10px;"></canvas>
+        <div style="display:flex;justify-content:center;" id="game_menu">
+
+        </div>
+      </div>
+      <div id="opponent" style="width:200px;height:100px;display:flex;justify-content:center;">
       </div>
     </div>
-    <div id="opponent" style="width:200px;height:100px;display:flex;justify-content:center;">
-    </div>
+    <input id="name" placeholder="Type Your Full Name Here"></input>
     <script src="main.js"></script>
   </body>
 </html>
